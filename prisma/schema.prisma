@@ -4,29 +4,40 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url = env("DATABASE_URL")
 }
 
 model User {
-  id           String   @id @default(uuid())
+  id           String     @id @default(uuid())
   username     String
-  password     String
+  name         String?
+  profilePic   String?
+
+  password     String?
+  provider     String
   solWalletId  String?
   solWallet    SolWallet?
   inrWalletId  String?
   inrWallet    InrWallet?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model InrWallet {
-  id      String @id @default(uuid())
-  balance Int
-  userId  String @unique
-  user    User   @relation(fields: [userId], references: [id])
+  id      String   @id @default(uuid())
+  balance Int      @default(0)
+  userId  String   @unique
+  user    User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SolWallet {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
   publicKey  String
   privateKey String
-  userId     String @unique
-  user       User   @relation(fields: [userId], references: [id])
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
