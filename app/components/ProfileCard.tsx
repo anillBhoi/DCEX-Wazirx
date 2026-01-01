@@ -2,16 +2,20 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { PrimaryButton } from "./Button";
+import { PrimaryButton, TabButton } from "./Button";
 import { useEffect, useState } from "react";
 import { time } from "console";
 import { useTokens } from "../api/hooks/UseTokens";
 
+
+type Tab = "tokens" | "send" | "add_funds" | "swap" | "withdraw"
+const tabs: Tab[] = ["tokens", "send", "add_funds", "swap", "withdraw"];
 export const ProfileCard = ({publicKey}:{
     publicKey:string
 }) => {
      const session = useSession();
         const router = useRouter();
+        const [selectedTab, setSelectedTab] = useState<Tab>("token");
     
         if(session.status === "loading") {
             // Todo: replace with a skeleton
@@ -32,8 +36,18 @@ export const ProfileCard = ({publicKey}:{
               image={session.data?.user?.image ?? ""} 
               name={session.data?.user?.name ?? ""} 
               />
-              
-               <Assets publicKey={publicKey}/>
+
+                {tabs.map((tab) => (
+  <TabButton
+    key={tab}                 
+    active={tab === selectedTab}
+    onClick={() => setSelectedTab(tab)}
+  >
+    {tab}
+  </TabButton>
+))}
+
+               {selectedTab === "tokens" ? <Assets publicKey={publicKey}/>: null}
           </div>
         </div>
     }
